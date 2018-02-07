@@ -77,6 +77,7 @@
       <file file_name="../../../../../../components/libraries/strerror/nrf_strerror.c" />
       <file file_name="../../../../../../components/libraries/twi_mngr/nrf_twi_mngr.c" />
       <file file_name="../../../../../../components/libraries/slip/slip.c" />
+      <file file_name="../../../../../../components/libraries/uart/retarget.c" />
     </folder>
     <folder Name="nRF_Drivers">
       <file file_name="../../../../../../components/drivers_nrf/clock/nrf_drv_clock.c" />

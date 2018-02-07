@@ -2307,6 +2307,13 @@
 #define NRF_STRERROR_ENABLED 1
 #endif
 
+// <q> RETARGET_ENABLED  - retarget - Retargeting stdio functions
+ 
+
+#ifndef RETARGET_ENABLED
+#define RETARGET_ENABLED 1
+#endif
+
 // <q> NRF_TWI_MNGR_ENABLED  - nrf_twi_mngr - TWI transaction manager
  
 
