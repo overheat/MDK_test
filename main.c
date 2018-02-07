@@ -52,6 +52,8 @@
 #include "nrf_delay.h"
 #include "nrf_uart.h"
 #include "app_uart.h"
+#include "nrf_drv_gpiote.h"
+
 
 /* When UART is used for communication with the host do not use flow control.*/
 #define UART_HWFC APP_UART_FLOW_CONTROL_DISABLED
@@ -59,6 +61,7 @@
 #define MAX_TEST_DATA_BYTES     (15U)                /**< max number of test bytes to be used for tx and rx. */
 #define UART_TX_BUF_SIZE 256                         /**< UART TX buffer size. */
 #define UART_RX_BUF_SIZE 256                         /**< UART RX buffer size. */
+
 
 void uart_error_handle(app_uart_evt_t * p_event)
 {
@@ -70,6 +73,35 @@ void uart_error_handle(app_uart_evt_t * p_event)
     {
         APP_ERROR_HANDLER(p_event->data.error_code);
     }
+}
+
+void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    nrf_drv_gpiote_out_toggle(BSP_LED_0);
+}
+/**
+ * @brief Function for configuring: BSP_BUTTON_0 pin for input, BSP_LED_0 pin for output,
+ * and configures GPIOTE to give an interrupt on pin change.
+ */
+static void gpio_init(void)
+{
+    ret_code_t err_code;
+
+    err_code = nrf_drv_gpiote_init();
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_gpiote_out_config_t out_config = GPIOTE_CONFIG_OUT_SIMPLE(false);
+
+    err_code = nrf_drv_gpiote_out_init(BSP_LED_0, &out_config);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
+    in_config.pull = NRF_GPIO_PIN_PULLUP;
+
+    err_code = nrf_drv_gpiote_in_init(BSP_BUTTON_0, &in_config, in_pin_handler);
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_gpiote_in_event_enable(BSP_BUTTON_0, true);
 }
 
 /**
@@ -103,6 +135,8 @@ int main(void)
 
     APP_ERROR_CHECK(err_code);
 
+    gpio_init();
+
     printf("\r\nStart: \r\n");
 
     while (true)
@@ -110,7 +144,7 @@ int main(void)
 
         for (int i = 0; i < LEDS_NUMBER; i++)
         {
-            bsp_board_led_invert(i);
+            //bsp_board_led_invert(i);
             nrf_delay_ms(500);
 
             printf("\r\nBlinking... \r\n");
